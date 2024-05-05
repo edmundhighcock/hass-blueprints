@@ -1,2 +1,2 @@
 # hass-blueprints
-Blueprints for home assistant
+Blueprints for home assistant automations

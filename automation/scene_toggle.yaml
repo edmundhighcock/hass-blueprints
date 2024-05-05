@@ -1,0 +1,64 @@
+blueprint:
+  name: Scene Toggle
+  description: >-
+    Pair two scenes (e.g. Kitchen Lights On/Off) with a toggle. When a scene is
+    activated, the toggle is moved to the correct position. When the toggle is moved,
+    the right scene is activated. (Coming soon - when enough elements of a scene
+    have been modified, e.g. the toggle is off but someone has manually turned
+    all the kitchen lights off, then the toggle will be moved).
+  domain: automation
+  input:
+    toggle:
+      name: The Toggle
+      description: The toggle helper object that will be automated (must be created separately)
+      selector:
+        entity:
+          filter:
+          - domain:
+            - input_boolean
+          multiple: false
+    scene_on:
+      name: The On Scene
+      description: >-
+        The scene that should be activated when the toggle turns on .
+        Conversely activating this scene switches this toggle.
+      selector:
+        entity:
+          filter:
+          - domain:
+            - scene
+          multiple: false
+    scene_off:
+      name: The Off Scene
+      description: The scene that should be activated when the toggle turns off
+      selector:
+        entity:
+          filter:
+          - domain:
+            - scene
+          multiple: false
+trigger:
+  - platform: state
+    entity_id:
+    - !input toggle
+    from: 'on'
+    to: 'off'
+  - platform: state
+    entity_id:
+    - !input toggle
+    from: 'off'
+    to: 'on'
+condition: []
+action:
+  - if:
+    - condition: state
+      entity_id: !input toggle
+      state: 'on'
+    then:
+    - service: scene.turn_on
+      target:
+        entity_id: !input scene_on
+    else:
+    - service: scene.turn_on
+      target:
+        entity_id: !input scene_off
